@@ -10,11 +10,11 @@ nextflow run main.nf \
 
 # local
 nextflow run main.nf \
---input "../aligner-files/samplesheet.csv" \
+--input "aligner-files/samplesheet.csv" \
 --outdir results \
 --aligner alevin \
 --protocol 10XV3 \
---genome_fasta "../aligner-files/genome.fa" \
---gtf "../aligner-files/genes.gtf" \
---salmon_index "../aligner-files/salmon_index/grch38_idx/" \
---txp2gene "../aligner-files/t2g.tsv"
+--genome_fasta "aligner-files/genome.fa" \
+--gtf "aligner-files/genes.gtf" \
+--salmon_index "aligner-files/salmon_index/grch38_idx/" \
+--txp2gene "aligner-files/t2g.tsv"

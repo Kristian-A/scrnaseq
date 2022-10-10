@@ -9,3 +9,5 @@ testing*
 log/
 reports/
 testme.sh
+aligner-files/
+kallisto_output/

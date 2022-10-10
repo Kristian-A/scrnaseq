@@ -29,7 +29,7 @@ process KALLISTOBUSTOOLS_COUNT {
 
     stub:
     """
-    cp -r kallisto_output ./Sample1_kallistobustools_count
+    cp -r ../../../kallisto_output ./Sample1_kallistobustools_count
     touch versions.yml
     """
 

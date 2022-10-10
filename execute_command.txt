@@ -1,0 +1,20 @@
+nextflow run main.nf \
+--input "s3://kurkiewicz-transcriptomics/scratch/pbmc_10k_v3_fastqs/samplesheet.csv" \
+--outdir results \
+--aligner alevin \
+--protocol 10XV3 \
+--genome_fasta "s3://kurkiewicz-transcriptomics/scratch/kalisto/genome.fa" \
+--gtf "s3://kurkiewicz-transcriptomics/scratch/kalisto/genes.gtf" \
+--salmon_index "s3://kurkiewicz-transcriptomics/scratch/salmon_index/grch38_idx/" \
+--txp2gene "s3://kurkiewicz-transcriptomics/scratch/salmon_index/t2g.tsv"
+
+# local
+nextflow run main.nf \
+--input "../aligner-files/samplesheet.csv" \
+--outdir results \
+--aligner alevin \
+--protocol 10XV3 \
+--genome_fasta "../aligner-files/genome.fa" \
+--gtf "../aligner-files/genes.gtf" \
+--salmon_index "../aligner-files/salmon_index/grch38_idx/" \
+--txp2gene "../aligner-files/t2g.tsv"

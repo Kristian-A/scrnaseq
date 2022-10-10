@@ -12,6 +12,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
+
 logger = logging.getLogger()
 
 
@@ -79,8 +80,7 @@ class RowChecker:
 
     def _validate_sample(self, row):
         """Assert that the sample name exists and convert spaces to underscores."""
-        if len(row[self._sample_col]) <= 0:
-            raise AssertionError("Sample input is required.")
+        assert len(row[self._sample_col]) > 0, "Sample input is required."
         # Sanitize samples slightly.
         row[self._sample_col] = row[self._sample_col].replace(" ", "_")
 
@@ -106,18 +106,17 @@ class RowChecker:
 
     def _validate_fastq_format(self, filename):
         """Assert that a given filename has one of the expected FASTQ extensions."""
-        if not any(filename.endswith(extension) for extension in self.VALID_FORMATS):
-            raise AssertionError(
-                f"The FASTQ file has an unrecognized extension: {filename}\n"
-                f"It should be one of: {', '.join(self.VALID_FORMATS)}"
-            )
+        assert any(filename.endswith(extension) for extension in self.VALID_FORMATS), (
+            f"The FASTQ file has an unrecognized extension: {filename}\n"
+            f"It should be one of: {', '.join(self.VALID_FORMATS)}"
+        )
 
     def validate_unique_samples(self):
         """
         Assert that the combination of sample name and FASTQ filename is unique.
 
-        In addition to the validation, also rename all samples to have a suffix of _T{n}, where n is the
-        number of times the same sample exist, but with different FASTQ files, e.g., multiple runs per experiment.
+        In addition to the validation, also rename the sample if more than one sample,
+        FASTQ file combination exists.
 
         """
         assert len(self._seen) == len(self.modified), "The pair of sample name and FASTQ must be unique."
@@ -141,14 +140,6 @@ def read_head(handle, num_lines=10):
     return "".join(lines)
 
 
-def print_error(error, context="Line", context_str=""):
-    error_str = f"ERROR: Please check samplesheet -> {error}"
-    if context != "" and context_str != "":
-        error_str = f"ERROR: Please check samplesheet -> {error}\n{context.strip()}: '{context_str.strip()}'"
-    print(error_str)
-    sys.exit(1)
-
-
 def sniff_format(handle):
     """
     Detect the tabular format.
@@ -168,7 +159,7 @@ def sniff_format(handle):
     handle.seek(0)
     sniffer = csv.Sniffer()
     if not sniffer.has_header(peek):
-        logger.critical("The given sample sheet does not appear to contain a header.")
+        logger.critical(f"The given sample sheet does not appear to contain a header.")
         sys.exit(1)
     dialect = sniffer.sniff(peek)
     return dialect
@@ -209,9 +200,7 @@ def check_samplesheet(file_in, file_out):
         HEADER = ["sample", "fastq_1", "fastq_2"]
         header = [x.strip('"') for x in fin.readline().strip().split(",")]
         if header[: len(HEADER)] != HEADER:
-            given = ",".join(header)
-            wanted = ",".join(HEADER)
-            print(f"ERROR: Please check samplesheet header -> {given} != {wanted}")
+            print("ERROR: Please check samplesheet header -> {} != {}".format(",".join(header), ",".join(HEADER)))
             sys.exit(1)
 
         ## Check sample entries
@@ -278,10 +267,7 @@ def check_samplesheet(file_in, file_out):
 
                 ## Check that multiple runs of the same sample are of the same datatype
                 if not all(x[0] == sample_mapping_dict[sample][0][0] for x in sample_mapping_dict[sample]):
-                    print_error(
-                        "Multiple runs of a sample must be of the same datatype!",
-                        "Sample: {}".format(sample),
-                    )
+                    print_error("Multiple runs of a sample must be of the same datatype!", "Sample: {}".format(sample))
 
                 for idx, val in enumerate(sample_mapping_dict[sample]):
                     fout.write(",".join(["{}".format(sample)] + val) + "\n")

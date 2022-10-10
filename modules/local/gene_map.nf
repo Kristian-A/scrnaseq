@@ -3,7 +3,6 @@
  */
 process GENE_MAP {
     tag "$gtf"
-    label 'process_low'
 
     conda (params.enable_conda ? "conda-forge::python=3.8.3" : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -15,9 +14,6 @@ process GENE_MAP {
 
     output:
     path "transcripts_to_genes.txt" , emit: gene_map
-
-    when:
-    task.ext.when == null || task.ext.when
 
     script:
     if("${gtf}".endsWith('.gz')){
